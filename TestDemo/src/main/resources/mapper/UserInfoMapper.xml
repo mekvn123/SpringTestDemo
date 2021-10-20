@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.myspringtestdemo.adapter.persistence.UserInfoMapper">
+
+    <select id="findUserById" resultType="com.example.myspringtestdemo.domain.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user_info
+        <where>
+            user_id = #{userId}
+        </where>
+    </select>
+    <select id="findUserById2" resultType="com.example.myspringtestdemo.domain.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user_info
+        <where>
+            user_id = #{userId}
+        </where>
+    </select>
+
+
+    <insert id="save">
+        INSERT INTO user_info
+        VALUES (#{param.userId},
+                #{param.userName},
+                #{param.userPassword},
+                #{param.userEmail})
+    </insert>
+
+    <select id="findUserPostById" resultMap="UserPost">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user_info
+        <where>
+            user_id=#{userId}
+        </where>
+    </select>
+
+    <insert id="saveUsers">
+        INSERT INTO user_info
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.userId},#{item.userName},#{item.userPassword},#{item.userEmail})
+        </foreach>
+    </insert>
+
+
+    <sql id="Base_Column_List">
+        user_id,user_name,user_password,user_email
+    </sql>
+
+    <resultMap id="UserPost" type="com.example.myspringtestdemo.domain.UserWithPost">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="userEmail" column="user_email"/>
+        <collection property="posts" ofType="com.example.myspringtestdemo.domain.Post" column="user_id"
+                    select="com.example.myspringtestdemo.adapter.persistence.PostMapper.findByUserId"/>
+    </resultMap>
+</mapper>
